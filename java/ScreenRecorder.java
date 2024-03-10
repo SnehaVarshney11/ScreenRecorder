@@ -27,9 +27,9 @@ public class ScreenRecorder extends JFrame{
     private final List<BufferedImage> imgList;
     private final Rectangle screenRectangle;
     private final Robot robot;
-    private final File file;
+    private File file;
     private AWTSequenceEncoder sequenceEncoder;
-    private volatile boolean isRecording;
+    private volatile boolean isRecording; //volatile indicates that the value can be modified by different threads. 
 
     public ScreenRecorder() throws AWTException {
         super("Screen Recorder");
@@ -41,7 +41,6 @@ public class ScreenRecorder extends JFrame{
         imgList = new ArrayList<>();
         screenRectangle = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
         robot = new Robot();
-        file = new File("outputVideo.mp4");
 
         startButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -70,7 +69,6 @@ public class ScreenRecorder extends JFrame{
 
         pack();
         setResizable(false);
-        setLocationRelativeTo(null); //center window
         setVisible(true);
 
     }
@@ -78,16 +76,21 @@ public class ScreenRecorder extends JFrame{
     private void startRecording() {
         if (!isRecording) {
             isRecording = true;
+            file = new File("outputVideo.mp4");
+            int counter = 1;
+            while (file.exists()) {
+                file = new File("outputVideo" + counter + ".mp4");
+                counter++;
+            }
             new Thread(() -> {
                 try {
-                    sequenceEncoder = AWTSequenceEncoder.createSequenceEncoder(file, 25);
-                    int count = 0;
-                    while (isRecording && count < 100) {
+                    sequenceEncoder = AWTSequenceEncoder.createSequenceEncoder(file, 8);
+                    
+                    while (isRecording) {
                         BufferedImage img = robot.createScreenCapture(screenRectangle);
                         imgList.add(img);
                         sequenceEncoder.encodeImage(img);
-                        count++;
-                        statusLabel.setText("Status: Recording - Frames captured: " + count);
+                        statusLabel.setText("Status: Recording");
                         Thread.sleep(40); 
                     }
                     sequenceEncoder.finish();
@@ -99,7 +102,6 @@ public class ScreenRecorder extends JFrame{
             }).start();
         }
     }
-
 
     private void stopRecording() {
         isRecording = false;
