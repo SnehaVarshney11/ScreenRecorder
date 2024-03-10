@@ -1,5 +1,6 @@
 import java.awt.AWTException;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.Toolkit;
@@ -65,8 +66,10 @@ public class ScreenRecorder extends JFrame{
         setLayout(new BorderLayout());
         add(btnPanel, BorderLayout.NORTH);
         add(statusPanel, BorderLayout.SOUTH);
+        setPreferredSize(new Dimension(200, 100));
 
         pack();
+        setResizable(false);
         setLocationRelativeTo(null); //center window
         setVisible(true);
 
