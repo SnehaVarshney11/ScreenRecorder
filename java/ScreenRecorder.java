@@ -84,14 +84,14 @@ public class ScreenRecorder extends JFrame{
             }
             new Thread(() -> {
                 try {
-                    sequenceEncoder = AWTSequenceEncoder.createSequenceEncoder(file, 8);
+                    sequenceEncoder = AWTSequenceEncoder.createSequenceEncoder(file, 5);
                     
                     while (isRecording) {
                         BufferedImage img = robot.createScreenCapture(screenRectangle);
                         imgList.add(img);
                         sequenceEncoder.encodeImage(img);
                         statusLabel.setText("Status: Recording");
-                        Thread.sleep(40); 
+                        Thread.sleep(40);  
                     }
                     sequenceEncoder.finish();
                     statusLabel.setText("Status: Recording stopped");
@@ -106,6 +106,7 @@ public class ScreenRecorder extends JFrame{
     private void stopRecording() {
         isRecording = false;
     }
+
 
     public static void main(String[] args) throws AWTException {
         new ScreenRecorder();
